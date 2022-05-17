@@ -1,4 +1,5 @@
 import { FlatList, View, StyleSheet } from 'react-native';
+
 import RepositoryItem from './RepositoryItem';
 import theme from '../theme';
 import useRepositories from '../hooks/useRepositories';
@@ -19,15 +20,11 @@ const RepositoryList = () => {
     ? dataRepositories.edges.map(edge => edge.node)
     : [];
 
-  const renderItem = ({ item }) => (
-    <RepositoryItem key={item.fullName} item={item} />
-  );
-
   return (
     <FlatList
       data={repositoryNodes}
       ItemSeparatorComponent={ItemSeparator}
-      renderItem={renderItem}
+      renderItem={({ item }) => <RepositoryItem item={item} />}
       keyExtractor={item => item.id}
     />
   );

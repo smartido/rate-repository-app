@@ -1,4 +1,5 @@
 import { View, Text, Image, StyleSheet } from 'react-native';
+
 import theme from '../theme';
 import Counter from './Counter';
 

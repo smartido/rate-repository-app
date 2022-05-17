@@ -1,11 +1,12 @@
 import { Pressable, View, Text, ScrollView, StyleSheet } from 'react-native';
 import { Link } from 'react-router-native';
 import Constants from 'expo-constants';
+import { useQuery, useApolloClient } from '@apollo/client';
+import { useNavigate } from 'react-router-native';
+
 import theme from '../theme';
 import { ME } from '../graphql/queries';
-import { useQuery, useApolloClient } from '@apollo/client';
 import useAuthStorage from '../hooks/useAuthStorage';
-import { useNavigate } from 'react-router-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -14,23 +15,46 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flexDirection: "row",
-    padding: 10,
   },
-  text: {
+  tabTouchable: {
+    flexGrow: 0,
+  },
+  tabContainer: {
+    paddingHorizontal: 15,
+    paddingVertical: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabText: {
     color: 'white',
-    fontWeight: theme.fontWeights.bold,
-    margin: 10,
   },
 });
 
+const AppBarTab = ({ children, to, ...props }) => {
+  const content = (
+    <View style={styles.tabContainer} {...props}>
+      <Text fontWeight="bold" style={styles.tabText}>
+        {children}
+      </Text>
+    </View>
+  );
+
+  return to ? (
+    <Link to={to} {...props}>
+      {content}
+    </Link>
+  ) : (
+    <Pressable {...props}>{content}</Pressable>
+  );
+};
+
 const AppBar = () => {
-  const { data } = useQuery(ME);
-
-  const authStorage = useAuthStorage();
-
   const apolloClient = useApolloClient();
-  
-  let navigate = useNavigate();
+  const authStorage = useAuthStorage();
+  const navigate = useNavigate();
+
+  const { data } = useQuery(ME);
 
   const signOut = async () => {
     await authStorage.removeAccessToken();
@@ -41,17 +65,11 @@ const AppBar = () => {
   return (
     <View style={styles.container}>
       <ScrollView horizontal style={styles.scrollView}>
-        <Link to="/">
-          <Text style={styles.text}>Repositories</Text>
-        </Link>
-        {data && data.me ? (
-          <Pressable onPress={() => signOut()}>
-            <Text style={styles.text}>Sign out</Text>
-          </Pressable>
+        <AppBarTab to="/">Repositories</AppBarTab>
+        {data?.me ? (
+          <AppBarTab onPress={signOut}>Sign out</AppBarTab>
         ) : (
-          <Link to="/signin">
-            <Text style={styles.text}>Sign In</Text>
-          </Link>
+          <AppBarTab to="/signin">Sign in</AppBarTab>
         )}
       </ScrollView>
     </View>
