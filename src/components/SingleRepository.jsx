@@ -1,4 +1,5 @@
 import { View, FlatList, StyleSheet } from 'react-native';
+import { useParams } from 'react-router-native';
 
 import theme from '../theme';
 import useRepository from '../hooks/useRepository';
@@ -17,24 +18,31 @@ const styles = StyleSheet.create({
 });
 
 const SingleRepository = () => {
-  const { dataRepository } = useRepository();
+  const { id } = useParams();
 
-  const reviewNodes = dataRepository && dataRepository.reviews
-    ? dataRepository.reviews.edges.map((edge) => edge.node)
+  const { repository, fetchMore } = useRepository({
+    id: id,
+    first: 10,
+  });
+
+  const reviewNodes = repository?.reviews
+    ? repository.reviews.edges.map((edge) => edge.node)
     : [];
 
   const ItemSeparator = () => <View style={styles.separator} />;
 
   return (
     <>
-      {dataRepository && (
+      {repository && (
         <FlatList
           data={reviewNodes}
           ItemSeparatorComponent={ItemSeparator}
           renderItem={({ item }) => <ReviewItem item={item} />}
           keyExtractor={({ id }) => id}
-          ListHeaderComponent={() => <RepositoryItem item={dataRepository} link={true} />}
+          ListHeaderComponent={() => <RepositoryItem item={repository} link={true} />}
           ListHeaderComponentStyle={styles.header}
+          onEndReached={() => fetchMore()}
+          onEndReachedThreshold={0.5}
         />
       )}
     </>

@@ -24,7 +24,8 @@ const styles = StyleSheet.create({
   },
   rating: {
     alignItems: 'center',
-    border: `2px solid ${theme.colors.primary}`,
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
     borderRadius: 100,
     color: theme.colors.primary,
     display: 'flex',
@@ -51,7 +52,6 @@ const styles = StyleSheet.create({
 
 const ReviewItem = ({ item }) => {
   const {
-    //id,
     createdAt,
     rating,
     text,

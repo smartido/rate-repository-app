@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { FlatList, View, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Searchbar } from 'react-native-paper';
@@ -19,26 +19,26 @@ const styles = StyleSheet.create({
   },
   picker: {
     backgroundColor: theme.colors.lightGray,
-    border: 0,
+    borderWidth: 0,
     marginTop: 20,
     padding: 10,
   }
 });
 
 const ItemSeparator = () => <View style={styles.separator} />;
+export class RepositoryListContainer extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  
+  renderHeader = () => {
+    const {
+      orderDirection,
+      setOrderDirection,
+      searchKeyword,
+      setSearchKeyword,
+    } = this.props;
 
-export const RepositoryListContainer = ({
-  repositories,
-  orderDirection,
-  setOrderDirection,
-  searchKeyword,
-  setSearchKeyword,
-}) => {
-  const repositoryNodes = repositories
-    ? repositories.edges.map((edge) => edge.node)
-    : [];
-
-  const renderHeader = () => {
     return (
       <View style={styles.container}>
         <Searchbar
@@ -48,7 +48,7 @@ export const RepositoryListContainer = ({
         />
         <Picker
           selectedValue={orderDirection}
-          onValueChange={(item) => setOrderDirection(item)}
+          onValueChange={(item) => setOrderDirection(item || undefined)}
           style={styles.picker}
         >
           <Picker.Item label="Latest repositories" value='' />
@@ -56,34 +56,52 @@ export const RepositoryListContainer = ({
           <Picker.Item label="Lowest related repositories" value='ASC' />
         </Picker>
       </View>
-    )
-  }
+    );
+  };
 
-  return (
-    <FlatList
-      data={repositoryNodes}
-      ItemSeparatorComponent={ItemSeparator}
-      renderItem={({ item }) => <RepositoryItem item={item} />}
-      keyExtractor={item => item.id}
-      ListHeaderComponent={renderHeader}
-    />
-  );
-};
+  render() {
+    const {
+      repositories,
+      onEndReach,
+    } = this.props;
+    
+    const repositoryNodes = repositories
+      ? repositories.edges.map((edge) => edge.node)
+      : [];
+
+    return (
+      <FlatList
+        data={repositoryNodes}
+        ItemSeparatorComponent={ItemSeparator}
+        renderItem={({ item }) => <RepositoryItem item={item} />}
+        keyExtractor={item => item.id}
+        ListHeaderComponent={this.renderHeader}
+        onEndReached={onEndReach}
+        onEndReachedThreshold={0.5}
+      />
+    );
+  }
+}
 
 const RepositoryList = () => {
-  const [orderDirection, setOrderDirection] = useState('');
+  const [orderDirection, setOrderDirection] = useState(undefined);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [debouncedSearchKeyword] = useDebounce(searchKeyword, 500);
 
-  const { dataRepositories } = useRepositories(orderDirection, debouncedSearchKeyword);
+  const { repositories, fetchMore } = useRepositories({
+    orderDirection,
+    debouncedSearchKeyword,
+    first: 10,
+  });
 
   return (
     <RepositoryListContainer
-      repositories={dataRepositories}
+      repositories={repositories}
       orderDirection={orderDirection}
       setOrderDirection={setOrderDirection}
       searchKeyword={debouncedSearchKeyword}
       setSearchKeyword={setSearchKeyword}
+      onEndReach={() => fetchMore()}
     />
   );
 };
