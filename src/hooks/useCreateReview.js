@@ -6,8 +6,8 @@ const useCreateReview = () => {
   const [createReview, result] = useMutation(CREATE_REVIEW);
 
   const addReview = async ({ repositoryName, ownerName, rating, text }) => {
-    const { data } = await createReview(
-      { variables: {
+    const { data } = await createReview({
+      variables: {
         repositoryName,
         ownerName,
         rating: Number(rating),
