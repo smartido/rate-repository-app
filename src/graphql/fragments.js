@@ -24,3 +24,16 @@ export const USER_FIELDS = gql`
     username
   }
 `;
+
+export const REVIEW_FIELDS = gql`
+  fragment reviewFields on Review {
+    id
+    text
+    rating
+    createdAt
+    user {
+      id
+      username
+    }
+  }
+`;

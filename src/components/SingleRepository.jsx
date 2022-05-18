@@ -1,27 +1,43 @@
-import { View, StyleSheet } from 'react-native';
+import { View, FlatList, StyleSheet } from 'react-native';
 
 import theme from '../theme';
 import useRepository from '../hooks/useRepository';
 import RepositoryItem from './RepositoryItem';
+import ReviewItem from './ReviewItem';
 
 const styles = StyleSheet.create({
-  container: {
+  separator: {
+    height: 10,
     backgroundColor: theme.colors.lightGray,
-    height: '100%',
   },
+  header: {
+    backgroundColor: theme.colors.lightGray,
+    paddingBottom: 10,
+  }
 });
 
 const SingleRepository = () => {
   const { dataRepository } = useRepository();
 
-  console.log('DATA_REPOSITORY', dataRepository);
+  const reviewNodes = dataRepository && dataRepository.reviews
+    ? dataRepository.reviews.edges.map((edge) => edge.node)
+    : [];
+
+  const ItemSeparator = () => <View style={styles.separator} />;
 
   return (
-    <View style={styles.container}>
+    <>
       {dataRepository && (
-        <RepositoryItem item={dataRepository} link={true} />
+        <FlatList
+          data={reviewNodes}
+          ItemSeparatorComponent={ItemSeparator}
+          renderItem={({ item }) => <ReviewItem item={item} />}
+          keyExtractor={({ id }) => id}
+          ListHeaderComponent={() => <RepositoryItem item={dataRepository} link={true} />}
+          ListHeaderComponentStyle={styles.header}
+        />
       )}
-    </View>
+    </>
   );
 };
 
