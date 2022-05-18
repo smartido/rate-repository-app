@@ -34,13 +34,27 @@ export const GET_REPOSITORIES = gql`
 `;
 
 export const ME = gql`
-  query {
+  query me($includeReviews: Boolean = false) {
     me {
       ...userFields
+      reviews @include(if: $includeReviews) {
+        edges {
+          node {
+            ...reviewFields
+          }
+          cursor
+        }
+        pageInfo {
+          endCursor
+          startCursor
+          hasNextPage
+        }
+      }
     }
   }
 
   ${USER_FIELDS}
+  ${REVIEW_FIELDS}
 `;
 
 export const GET_REPOSITORY = gql`
