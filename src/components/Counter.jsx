@@ -31,7 +31,7 @@ const Counter = ({ number, text }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View testID="counterItem" style={styles.container}>
       <Text style={styles.title}>{formattedNumber(number)}</Text>
       <Text style={styles.subtitle}>{text}</Text>
     </View>
