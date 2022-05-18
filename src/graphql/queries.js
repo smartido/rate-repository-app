@@ -25,3 +25,13 @@ export const ME = gql`
 
   ${USER_FIELDS}
 `;
+
+export const GET_REPOSITORY = gql`
+  query repository($id: ID!) {
+    repository(id: $id) {
+      ...repositoryFields
+    }
+  }
+
+  ${REPOSITORY_FIELDS}
+`;
