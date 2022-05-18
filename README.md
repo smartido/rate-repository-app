@@ -4,7 +4,7 @@ React Native mobile application for rating GitHub repositories developed during 
 
 Course material: [https://fullstackopen.com/en/part10](https://fullstackopen.com/en/part10)
 
-<img src="./assets/images/app-demo.gif" width="50%" />
+<img src="./assets/app-demo.png" width="50%" />
 
 The app was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app) and is running on Expo.
 
